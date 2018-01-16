@@ -1,5 +1,7 @@
+import os
 import boto3
 from PIL import Image
+from boto3.s3.transfer import S3Transfer
 
 def crop(image_path, coords, saved_location):
   """
@@ -19,11 +21,13 @@ def uploadfile(sourcefile, bucket_name, folder):
   @param folder: Path to upload the file
   """
   s3 = boto3.client('s3',)
-  filename = sourcefile.split('\\')[1]
+  filename = sourcefile
   transfer = S3Transfer(s3)
   data = open(sourcefile, 'rb')
+  transfer.upload_file(sourcefile , bucket_name, '{}/{}'.format(folder, filename))
+  
+def removefile(sourcefile):
   os.remove(sourcefile)
-  return transfer.upload_file(sourcefile , bucket_name, '{}/{}'.format(folder, filename))
 
 
 def downloadfile(bucket_name, folder, filename):
