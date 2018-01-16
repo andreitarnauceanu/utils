@@ -1,4 +1,5 @@
-
+import boto3
+from PIL import Image
 
 def crop(image_path, coords, saved_location):
   """
