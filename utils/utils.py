@@ -22,6 +22,7 @@ def uploadfile(sourcefile, bucket_name, folder):
   filename = sourcefile.split('\\')[1]
   transfer = S3Transfer(s3)
   data = open(sourcefile, 'rb')
+  os.remove(sourcefile)
   return transfer.upload_file(sourcefile , bucket_name, '{}/{}'.format(folder, filename))
 
 
