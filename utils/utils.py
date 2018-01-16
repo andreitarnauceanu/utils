@@ -21,7 +21,7 @@ def uploadfile(sourcefile, bucket_name, folder):
   @param folder: Path to upload the file
   """
   s3 = boto3.client('s3',)
-  filename = sourcefile
+  filename = sourcefile.split('/')[-1]
   transfer = S3Transfer(s3)
   data = open(sourcefile, 'rb')
   transfer.upload_file(sourcefile , bucket_name, '{}/{}'.format(folder, filename))
@@ -30,15 +30,22 @@ def removefile(sourcefile):
   os.remove(sourcefile)
 
 
-def downloadfile(bucket_name, folder, filename):
+def downloadfile(bucket_name, dst_folder, filepath):
   """
   @param bucket_name: S3 bucket name
-  @param folder: Folder name
-  @param filename: Filename
+  @param dst_folder: Folder to download file
+  @param filepath: S3 Filepath
   """
-  client = boto3.client('s3',)
-  transfer = S3Transfer(client)
-  # Download s3://bucket/key to /tmp/myfile
-  transfer.download_file(bucket_name, filename, '/tmp/{}'.format(filename))
+#  client = boto3.client('s3',)
+#  transfer = S3Transfer(client)
+#  # Download s3://bucket/key to ./folder/myfile
+#  transfer.download_file(bucket_name, filepath, '{}/{}'.format(dst_folder,filepath.split('/')[-1]))
+  s3 = boto3.resource('s3')
+  if not os.path.exists(dst_folder):
+    os.mkdir(dst_folder)
+  bucket = s3.Bucket(bucket_name)
+  filename = filepath.split('/')[-1]
+  with open('{}/{}'.format(dst_folder, filename), 'wb') as data:
+    bucket.download_fileobj(filepath, data)
 
 
